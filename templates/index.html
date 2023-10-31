@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Portrait Image Generator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Portrait Image Generator</h1>
+        <!-- <input type="file" id="upload-button" accept="image/*"> -->
+        <form id="upload-form" enctype="multipart/form-data" method="post" action="/">
+            <input type="file" name="image" id="upload-button" accept="image/*">
+            <button type="submit">Submit</button>
+        </form>
+        
+        <div class="image-container">
+            <div class="image-upload">
+                <img id="uploaded-image" src="{{ url_for('static', filename='uploaded_image.jpg') }}" alt="Uploaded Image">
+            </div>
+            
+            <button id="submit-button">Process Image</button>
+            <div class="image-process">
+                <img id="processed-image" src="{{ url_for('static', filename='processed_image.jpg') }}" alt="Processed Image">
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
