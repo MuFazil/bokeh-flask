@@ -15,3 +15,12 @@ document
         "{{ url_for('static', filename='uploaded_image.jpg') }}";
     }
   });
+
+// document
+//   .getElementById("upload-button")
+//   .addEventListener("change", function () {
+//     const customUploadLabel = document.querySelector(".custom-file-upload");
+//     const input = this;
+//     customUploadLabel.textContent =
+//       input.files.length > 0 ? input.files[0].name : "Choose an Image";
+//   });

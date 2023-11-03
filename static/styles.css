@@ -1,17 +1,22 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #000000;
     text-align: center;
     margin: 0;
     padding: 0;
+    width: 100vw;
+    color: #34A853;
 }
 
 .container {
-    width: 100%;
-    max-width: 400px;
+    color: #34A853
+    
+    ;
+    width: 80vw;
+    margin: 10vw;
     /* margin: 20px auto; */
     padding-top: 20px;
-    background-color: #fff;
+    background-color: #181717;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -19,36 +24,51 @@ body {
 h1 {
     font-size: 24px;
     margin: 0 0 20px;
-    color: #333;
+    color: #eae5e5;
 }
 
-.buttons{
-    background-color: #d7dee3;
+/* Style for the file upload input */
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0074D9;
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
 }
 
-button#upload-button:hover {
-    background-color: #0056b3;
+/* Style for the Submit button */
+.submit-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #34A853;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* Style for the form container */
+#upload-form {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .image-container {
     
     text-align: center;
+
 }
 
 .image-upload img,
 .image-process img {
-    margin-top: 10px;
+    margin-top: 20px;
     width: 100%;
     max-width: 300px;
     height: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
