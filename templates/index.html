@@ -9,7 +9,6 @@
 <body>
     <div class="container">
         <h1>Portrait Image Generator</h1>
-        <!-- <input type="file" id="upload-button" accept="image/*"> -->
         <form id="upload-form" enctype="multipart/form-data" method="post" action="/">
             <label for="image" class="custom-file-upload">
                 <input type="file" name="image" id="upload-button" accept="image/*">
@@ -25,7 +24,6 @@
             </div>
             
             <h2>Bokeh Image</h2>
-            <!-- <button id="submit-button">Process Image</button> -->
             <div class="image-process">
                 <img id="processed-image" src="{{ url_for('static', filename='processed_image.jpg') }}" alt="Processed Image">
             </div>

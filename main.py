@@ -9,6 +9,7 @@ from flask import (
     jsonify,
 )
 import cv2
+import torch
 
 app = Flask(__name__)
 app.static_folder = "static"
@@ -26,79 +27,68 @@ def index():
             # The processed image should replace the placeholder-image.png
 
             image = cv2.imread("static/uploaded_image.jpg")
-            # Set a threshold value
             import numpy as np
-            import matplotlib.pyplot as plt
 
-            resize_percentage = 40
+            # download MiDaS model
+            midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
+            midas.to("cpu")
+            midas.eval()
+
+            # input tranformational pipeline
+            transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
+            transform = transforms.small_transform
+
+            resize_percentage = 30
             width = int(image.shape[1] * resize_percentage / 100)
             height = int(image.shape[0] * resize_percentage / 100)
+            print(width, height)
             image = cv2.resize(image, (width, height))
 
+            cv2.imshow("Given image", image)
+
+            # Tranform image to input for midas
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            pixel_values = image.reshape((-1, 3))
+            imagebatch = transform(image).to("cpu")
 
-            pixel_values = np.float32(pixel_values)
+            # make a prediction
+            with torch.no_grad():
+                prediction = midas(imagebatch)
+                prediction = torch.nn.functional.interpolate(
+                    prediction.unsqueeze(1),
+                    size=image.shape[:2],
+                    mode="bicubic",
+                    align_corners=False,
+                ).squeeze()
 
-            # define stopping criteria
-            criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
+                output = prediction.to("cpu").numpy()
+                output_norm = cv2.normalize(
+                    output, None, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U
+                )
 
-            # number of clusters (K)
-            k = 2
-            _, labels, (centers) = cv2.kmeans(
-                pixel_values, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS
+            # thresholding the image
+            ret, mask = cv2.threshold(
+                output_norm, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
             )
+            mask_fore = cv2.bitwise_not(mask)
 
-            # convert back to 8 bit values
-            centers = np.uint8(centers)
+            # creating masks and finding foreground and background separetely
+            bokeh_image = np.copy(image)
+            foreground_sub = np.copy(image)
+            foreground_sub = cv2.bitwise_and(
+                foreground_sub, foreground_sub, mask=mask_fore
+            )
+            bokeh_image = cv2.bitwise_and(bokeh_image, bokeh_image, mask=mask)
 
-            # flatten the labels array
-            labels = labels.flatten()
+            # blurring the background of the image
+            bokeh_image = cv2.GaussianBlur(bokeh_image, (5, 5), 5)
 
-            # convert all pixels to the color of the centroids
-            segmented_image = centers[labels.flatten()]
+            # adding the blurred background to the foreground resulting in the bokeh effect
+            output_image = cv2.add(bokeh_image, foreground_sub)
 
-            # reshape back to the original image dimension
-            segmented_image = segmented_image.reshape(image.shape)
-
-            cluster = range(10)
-            for i in cluster:
-                masked_image = np.copy(image)
-                masked_image = masked_image.reshape((-1, 3))
-                masked_image[labels == i] = [0, 0, 0]
-                # convert back to original shape
-                masked_image = masked_image.reshape(image.shape)
-
-            # disable the non-required clusters(background segments)
-            masked_image = np.copy(image)
-            # convert to the shape of a vector of pixel values
-            masked_image = masked_image.reshape((-1, 3))
-            # color (i.e cluster) to disable
-            cluster = [1]
-            for i in cluster:
-                masked_image[labels == i] = [0, 0, 0]
-            # convert back to original shape
-            masked_image = masked_image.reshape(image.shape)
-
-            # convert the image back to BGR format
-            masked_image = cv2.cvtColor(masked_image, cv2.COLOR_RGB2BGR)
-
-            # creating a mask from the foreground image for the background
-            gray_mask = cv2.cvtColor(masked_image, cv2.COLOR_BGR2GRAY)
-
-            _, mask = cv2.threshold(gray_mask, 1, 255, cv2.THRESH_BINARY_INV)
-
-            # historical_background = cv2.bitwise_and(image, image, mask=mask)
-            historical_background = cv2.GaussianBlur(
-                image, (25, 25), 0
-            )  # Default kernel size
-
-            # Combine your resized image (foreground) and the historical background
-            output_image = cv2.add(masked_image, historical_background)
-
+            output_image = cv2.cvtColor(output_image, cv2.COLOR_BGR2RGB)
             # Save or display the binarized image
             cv2.imwrite("static/processed_image.jpg", output_image)
-
+            # cv2.imshow("Bokeh image", bokeh_image)
             session["uploaded_image"] = "static/uploaded_image.jpg"
 
             # Redirect to the index page after processing

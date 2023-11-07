@@ -1,3 +1,4 @@
+/* Base styles that apply to all screen sizes */
 body {
     font-family: Arial, sans-serif;
     background-color: #000000;
@@ -9,12 +10,9 @@ body {
 }
 
 .container {
-    color: #34A853
-    
-    ;
+    color: #34A853;
     width: 80vw;
     margin: 10vw;
-    /* margin: 20px auto; */
     padding-top: 20px;
     background-color: #181717;
     border-radius: 10px;
@@ -27,7 +25,6 @@ h1 {
     color: #eae5e5;
 }
 
-/* Style for the file upload input */
 .custom-file-upload {
     display: inline-block;
     padding: 10px 20px;
@@ -38,7 +35,6 @@ h1 {
     cursor: pointer;
 }
 
-/* Style for the Submit button */
 .submit-button {
     display: inline-block;
     padding: 10px 20px;
@@ -50,7 +46,6 @@ h1 {
     margin-top: 10px;
 }
 
-/* Style for the form container */
 #upload-form {
     text-align: center;
     margin-top: 20px;
@@ -61,7 +56,6 @@ h1 {
     text-align: left;
     margin-left: 15px;
     color: aqua;
-
 }
 
 .image-upload img,
@@ -71,5 +65,25 @@ h1 {
     height: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
-    /* margin-bottom: 10px; */
+}
+
+/* Media query for screens smaller than 600px */
+@media (max-width: 600px) {
+    .container {
+        width: 90vw;
+        margin: 5vw;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .custom-file-upload,
+    .submit-button {
+        padding: 8px 16px;
+    }
+
+    .image-container {
+        margin-left: 5px;
+    }
 }
